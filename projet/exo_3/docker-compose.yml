@@ -1,0 +1,42 @@
+version: '2.0'
+services:
+
+#data base mysql container
+  db:
+    build: db_
+    expose:
+      - "3306"
+    ports:
+      - "13306:3306"
+    environment:
+       MYSQL_ROOT_PASSWORD: password
+       MYSQL_DATABASE: db_GF
+       MYSQL_USER: db_GF
+       MYSQL_PASSWORD: db_GF
+    volumes:
+      - ./sharedFile/mysql-db:/var/lib/mysql
+    restart: always
+#    container_name: my-db-container
+#$ docker exec -it projet_db_1 /bin/bash
+#mysql -u root -p
+#/bin/sh -c 'mysql -u root -ppassword </docker-entrypoint-initdb.d/NYCP_database.Derby.sql'
+#glassfish server for deploying web applications or EJB , etc..
+  serverglassfish:
+    build: glassfish_ 
+    environment:
+      - DATABASE_HOST=db
+      - DATABASE_USER=db_GF
+      - DATABASE_PASSWORD=db_GF
+      - DATABASE_PORT=3306
+      - ADMIN_PASSWORD=password
+    ports:
+      - "18080:8080"
+      - "14848:4848"
+    volumes:
+      - ./sharedFile:/sharedFile
+    depends_on:
+      - db
+    links:
+      - db
+    restart: always
+#    container_name: my-glassfish-server
